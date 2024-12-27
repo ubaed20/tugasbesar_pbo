@@ -9,8 +9,7 @@ class Admin extends Model
 {
     use HasFactory;
 
-    protected $table = 'admins'; // Jika tabel Anda bernama 'admins'
-    
+    protected $table = 'admins'; // Nama tabel
     protected $fillable = [
         'nama_pelanggan',
         'alamat',

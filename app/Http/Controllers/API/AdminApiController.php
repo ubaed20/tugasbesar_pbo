@@ -10,74 +10,80 @@ class AdminApiController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        $admins = Admin::all(); // Mengambil semua data Admin
-        return response()->json($admins);
+        $admins = Admin::all(); // Mengambil semua data dari tabel admins
+        return response()->json($admins, 200); // Mengembalikan response JSON
     }
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'nama_pelanggan' => 'required|string|max:255',
-            'alamat' => 'required|string|max:255',
+            'alamat' => 'required|string',
             'no_hp' => 'required|string|max:15',
-            'jenis_gabah' => 'required|string|max:255',
-            'berat_gabah' => 'required|numeric',
-            'durasi_pengeringan' => 'required|integer',
-            'status' => 'required|string|max:255',
+            'jenis_gabah' => 'required|string|max:50',
+            'berat_gabah' => 'required|numeric|min:0',
+            'durasi_pengeringan' => 'required|integer|min:1',
+            'status' => 'required|string|max:50',
         ]);
 
-        // Membuat record baru
-        $admin = Admin::create($request->all());
-        return response()->json($admin, 201); // Menampilkan data yang baru dibuat
+        $admin = Admin::create($validatedData);
+        return response()->json($admin, 201); // Mengembalikan data yang baru dibuat
     }
 
     /**
      * Display the specified resource.
+     *
+     * @param  \App\Models\Admin  $admin
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show(string $id)
+    public function show(Admin $admin)
     {
-        $admin = Admin::find($id);
-
-        if (!$admin) {
-            return response()->json(['message' => 'Admin not found'], 404);
-        }
-
-        return response()->json($admin);
+        return response()->json($admin, 200); // Mengembalikan data spesifik berdasarkan ID
     }
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Admin  $admin
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Admin $admin)
     {
-        $admin = Admin::find($id);
+        $validatedData = $request->validate([
+            'nama_pelanggan' => 'nullable|string|max:255',
+            'alamat' => 'nullable|string',
+            'no_hp' => 'nullable|string|max:15',
+            'jenis_gabah' => 'nullable|string|max:50',
+            'berat_gabah' => 'nullable|numeric|min:0',
+            'durasi_pengeringan' => 'nullable|integer|min:1',
+            'status' => 'nullable|string|max:50',
+        ]);
 
-        if (!$admin) {
-            return response()->json(['message' => 'Admin not found'], 404);
-        }
-
-        $admin->update($request->all()); // Mengupdate data Admin
-        return response()->json($admin);
+        $admin->update($validatedData);
+        return response()->json($admin, 200); // Mengembalikan data yang telah diperbarui
     }
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Admin  $admin
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(string $id)
+    public function destroy(Admin $admin)
     {
-        $admin = Admin::find($id);
-
-        if (!$admin) {
-            return response()->json(['message' => 'Admin not found'], 404);
-        }
-
-        $admin->delete(); // Menghapus data Admin
-        return response()->json(['message' => 'Admin deleted successfully']);
+        $admin->delete();
+        return response()->json(['message' => 'Alhamdulillah Data Telah Dihapus'], 200);
     }
 }
